@@ -44,7 +44,99 @@ head(lar.frame)
 
 mo.imp4<-pcount(~1 ~HQ+I(Elev^2)+Stream+Pil,
                 data=lar.frame)
+  
+#hum, how can I insert boxes for figures and outcome tables in between script lines!!??
+#anyways this is what I've got:
+  
+summary(mo.imp4)  
+#  pcount(formula = ~1 ~ HQ + I(Elev^2) + Stream + Pil, data = ggr.data)
+#
+#Abundance:
+#            Estimate     SE      z  P(>|z|)
+#(Intercept)    1.163 0.1638   7.10 1.24e-12
+#HQ            -1.340 0.1245 -10.77 5.03e-27
+#I(Elev^2)     -0.295 0.1445  -2.04 4.12e-02
+#Stream         0.384 0.0691   5.55 2.87e-08
+#Pil           -0.347 0.0707  -4.90 9.68e-07
 
+#Detection:
+# Estimate    SE     z P(>|z|)
+#   -0.563 0.172 -3.28 0.00105
+
+#AIC: 877.7783 
+
+#let's plot the effect of the 4 variables on group abundance
+  
+  #finally I need to standarize every variable independently
+  #to get the ranges for the prediction
+  
+  stream.mean<-mean(lar.cov$Stream)
+stream.sd<-sd(lar.cov$Stream)
+stream.z<-(lar.cov$Stream-stream.mean)/stream.sd
+range(stream.z)
+
+  
+HQ.mean<-mean(lar.cov$HQ)
+HQ.sd<-sd(lar.cov$HQ)
+HQ.z<-(lar.cov$HQ-HQ.mean)/HQ.sd
+range(HQ.z)
+
+Pil.mean<-mean(lar.cov$Pil)
+Pil.sd<-sd(lar.cov$Pil)
+Pil.z<-(lar.cov$Pil-Pil.mean)/Pil.sd
+range(Pil.z)
+
+#not sure if the elevation range should be done exactly the same
+  #or needs to be the range of Elev^2, another doubt!
+  #well, let's go for it
+
+Elev.mean<-mean(lar.cov$Elev)
+Elev.sd<-sd(lar.cov$Elev)
+Elev.z<-(lar.cov$Elev-Elev.mean)/Elev.sd
+range(Elev.z)
+
+  #let's prepare the data.frame for predictions:
+  
+  newData1<-data.frame(HQ=seq(-1.618734,2.495939,,50),
+Pil=seq(-0.9877903, 2.6948453,,50),
+Stream=seq(-1.435354,2.763507,,50),
+Elev=seq(-2.733055,2.520436,,50))
+E.d<-predict(mo.imp4,type="state",newdata=newData1,appendData=TRUE)
+head(E.d)
+  
+  #all looks correct
+  #let's do the plotting
+  #of the 4 figures
+  
+  par(mfrow=c(2,2))
+
+plot(Predicted~Pil,E.d,type="l",lwd=2,col=2,
+xlab="number of pileatus groups (standarized)",ylab="predicted lar abundance")
+lines(lower~Pil,E.d,type="l",lty=2,col=2)
+lines(upper~Pil,E.d,type="l",lty=2,col=2)
+
+plot(Predicted~Elev,E.d,type="l",lwd=2,col=2,
+     xlab="Elevation (standarized)",ylab="predicted lar abundance")
+lines(lower~Elev,E.d,type="l",lty=2,col=2)
+lines(upper~Elev,E.d,type="l",lty=2,col=2)
+#hum, something not quite right, it is the same!!
+
+plot(Predicted~Stream,E.d,type="l",lwd=2,col=2,
+     xlab="length of streams in listening area (standarized)",ylab="predicted lar abundance")
+lines(lower~Stream,E.d,type="l",lty=2,col=2)
+lines(upper~Stream,E.d,type="l",lty=2,col=2)
+
+plot(Predicted~HQ,E.d,type="l",lwd=2,col=2,
+     xlab="distance to headquarters (standarized)",ylab="predicted lar abundance")
+lines(lower~HQ,E.d,type="l",lty=2,col=2)
+lines(upper~HQ,E.d,type="l",lty=2,col=2)
+  
+  #oh no, there's something wrong!!
+  #the 4 figures are exactly the same
+  #only the axes numbers change
+  #what am I doing wrong?
+  
+  
 
 
 
