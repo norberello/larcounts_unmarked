@@ -1,0 +1,51 @@
+rm(list=ls())
+setwd("~/Documents/R scripts and data/unm_practice")
+#data
+lar.data<-read.csv("lartable_may17.csv")
+#now let's make a dataframe for lar gibbon group counts
+#and one for covariates separately
+lar.count<-(lar.data[,4:8])
+#good
+lar.cov<-(lar.data[,9:15])
+#good!
+
+library(unmarked)
+
+#let's prepare the unmarked frame
+#the date covariates are the 5 days of listening
+#I don't want to put observation covariates
+#as I think there isn't any that affects observation quality
+#but, it seems that it is compulsory
+#so let's make them as the 5 days
+#but in the methods just go for enviromental covariates
+#is this correct?
+
+obsCovs<-list(date=lar.count[,c("d1","d2","d3","d4","d5")],
+              ivel=lar.count[,c("d1","d2","d3","d4","d5")])
+              
+lar.frame<-unmarkedFramePCount(y=lar.count,
+                              siteCovs=lar.cov,
+                              obsCovs=obsCovs)
+                              
+#let's standarize the covariates within the lar.frame:
+sc <- scale(siteCovs(lar.frame))
+head(sc)
+siteCovs(lar.frame) <- sc
+head(lar.frame)
+#this is great!
+
+#let's just have a model for simplicity with the variables I think explain best
+#gibbon group counts
+#HQ: distance to HeadQuarters (protection)
+#The elevation is expresses as its quadratic function
+#Stream: length of rivers in the area, streams might be associated
+#to more riparian vegetation
+#Pil: the presence of a siter gibbon species: competition for space
+
+mo.imp4<-pcount(~1 ~HQ+I(Elev^2)+Stream+Pil,
+                data=lar.frame)
+
+
+
+
+                              
