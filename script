@@ -138,6 +138,61 @@ lines(upper~HQ,E.d,type="l",lty=2,col=2)
   #I have uploaded the resulting figures (don't know how to paste it into here)
   
 
+  #I think I found the solution:
+par(mfrow=c(2,2))
+#predicting lar gibbon abundance by pil group presence
+newData1<-data.frame(HQ=mean(HQ.z),
+                     Pil=seq(-0.9877903, 2.6948453,,50),
+                     Stream=mean(stream.z),
+                     Elev=mean(Elev.z))
+E.d<-predict(mo.imp4,type="state",newdata=newData1,appendData=TRUE)
+head(E.d)
+
+plot(Predicted~Pil,E.d,type="l",lwd=2,col=2,
+     xlab="number of pileatus groups (standarized)",ylab="predicted lar abundance")
+lines(lower~Pil,E.d,type="l",lty=2,col=2)
+lines(upper~Pil,E.d,type="l",lty=2,col=2)
+
+
+#let's go for streams
+newData2<-data.frame(HQ=mean(HQ.z),
+                     Pil=mean(Pil.z),
+                     Stream=seq(-1.435354,2.763507,,50),
+                     Elev=mean(Elev.z))
+E.d.2<-predict(mo.imp4,type="state",newdata=newData2,appendData=TRUE)
+head(E.d.2)
+
+plot(Predicted~Stream,E.d.2,type="l",lwd=2,col=2,
+     xlab="stream length (standarized)",ylab="predicted lar abundance")
+lines(lower~Stream,E.d.2,type="l",lty=2,col=2)
+lines(upper~Stream,E.d.2,type="l",lty=2,col=2)
+
+#Elevation
+newData3<-data.frame(HQ=mean(HQ.z),
+                     Pil=mean(Pil.z),
+                     Stream=mean(stream.z),
+                     Elev=seq(-2.733055,2.520436,,50))
+E.d.3<-predict(mo.imp4,type="state",newdata=newData3,appendData=TRUE)
+head(E.d.3)
+
+plot(Predicted~Elev,E.d.3,type="l",lwd=2,col=2,
+     xlab="elevation (standarized)",ylab="predicted lar abundance")
+lines(lower~Elev,E.d.3,type="l",lty=2,col=2)
+lines(upper~Elev,E.d.3,type="l",lty=2,col=2)
+
+##HQ
+newData4<-data.frame(HQ=seq(-1.618734,2.495939,,50),
+                     Pil=mean(Pil.z),
+                     Stream=mean(stream.z),
+                     Elev=mean(Elev.z))
+E.d.4<-predict(mo.imp4,type="state",newdata=newData4,appendData=TRUE)
+head(E.d.4)
+
+plot(Predicted~HQ,E.d.4,type="l",lwd=2,col=2,
+     xlab="distance to headquarters (standarized)",
+     ylab="predicted lar abundance")
+lines(lower~HQ,E.d.4,type="l",lty=2,col=2)
+lines(upper~HQ,E.d.4,type="l",lty=2,col=2)
 
 
                               
